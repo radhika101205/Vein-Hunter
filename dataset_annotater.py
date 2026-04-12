@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import glob
 import os
-from skimage.filters import frangi
 
 class VeinAnnotator:
     def __init__(self):
@@ -12,23 +11,6 @@ class VeinAnnotator:
         self.mask = None
         self.img = None
         self.display_img = None
-
-    def auto_detect_veins(self, image):
-        print("Running Auto-Detection (Frangi)...")
-        # 1. Preprocess
-        b, green_channel, r = cv2.split(image)
-        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
-        enhanced = clahe.apply(green_channel)
-        blurred = cv2.GaussianBlur(enhanced, (5, 5), 0)
-
-        # 2. Frangi
-        vein_probs = frangi(blurred, sigmas=np.arange(3, 11, 2), beta=0.5, gamma=15, black_ridges=True)
-        vein_prob_norm = cv2.normalize(vein_probs, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-
-        # 3. Threshold and Clean
-        _, binary = cv2.threshold(vein_prob_norm, 15, 255, cv2.THRESH_BINARY)
-        clean_mask = cv2.morphologyEx(binary, cv2.MORPH_OPEN, np.ones((3,3), np.uint8))
-        return clean_mask
 
     def mouse_callback(self, event, x, y, flags, param):
         if event == cv2.EVENT_LBUTTONDOWN:
@@ -62,7 +44,7 @@ class VeinAnnotator:
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
         cv2.imshow("Dataset Annotator", self.display_img)
 
-def run_annotator(image_folder=".", mask_folder="masks"):
+def run_annotator(image_folder="CV_project_images", mask_folder="masks"):
     if not os.path.exists(mask_folder):
         os.makedirs(mask_folder)
 
@@ -70,7 +52,7 @@ def run_annotator(image_folder=".", mask_folder="masks"):
     image_paths = glob.glob(os.path.join(image_folder, "*.jpg")) + glob.glob(os.path.join(image_folder, "*.png"))
     
     if not image_paths:
-        print("No images found in the specified folder.")
+        print(f"No images found in the '{image_folder}' folder.")
         return
 
     annotator = VeinAnnotator()
@@ -85,8 +67,8 @@ def run_annotator(image_folder=".", mask_folder="masks"):
         new_height = int((new_width / width) * height)
         annotator.img = cv2.resize(img, (new_width, new_height))
 
-        # Generate initial guess
-        annotator.mask = annotator.auto_detect_veins(annotator.img)
+        # --- THE FIX: Create a completely blank (pitch black) mask to start ---
+        annotator.mask = np.zeros((new_height, new_width), dtype=np.uint8)
         annotator.update_display()
 
         print(f"\nEditing: {os.path.basename(img_path)}")
@@ -126,5 +108,5 @@ def run_annotator(image_folder=".", mask_folder="masks"):
     cv2.destroyAllWindows()
     print("Dataset annotation complete!")
 
-# Run the tool on the current directory
+# Run the tool
 run_annotator()
