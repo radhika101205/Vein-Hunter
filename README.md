@@ -34,7 +34,7 @@
 The model uses a **U-Net** backbone enhanced with **CBAM** (Channel and Spatial Attention) blocks in the decoder path. This allow the network to perform "semantic rejection" of surface artifacts that typically confuse classical filters like the Frangi vesselness filter.
 
 ### Architecture diagram
-![Alt text](/home/radhika/Documents/Vein_Hunter/Vein-Hunter/results/flowchart.png)
+![Architecture diagram](/home/radhika/Documents/Vein_Hunter/Vein-Hunter/results/flowchart.png)
 -----
 
 ## Getting Started
@@ -67,10 +67,10 @@ python live_vein_hunter.py
 ## Results
 
 ### Original vs. Mask vs. Overlay
-![Alt text](/home/radhika/Documents/Vein_Hunter/Vein-Hunter/results/mask.jpeg)
+![Original vs. Mask vs. Overlay](/home/radhika/Documents/Vein_Hunter/Vein-Hunter/results/mask.jpeg)
 
-### Real-time vein detection/home/radhika/Documents/Vein_Hunter/Vein-Hunter/WhatsApp Image 2026
-![Alt text](/home/radhika/Documents/Vein_Hunter/Vein-Hunter/results/realtime.jpeg)
+### Real-time vein detection
+![Real-time vein detection](/home/radhika/Documents/Vein_Hunter/Vein-Hunter/results/realtime.jpeg)
 
 -----
 
